@@ -3,7 +3,7 @@ RPi_mcp3008 is a library to listen to the MCP3008 A/D converter chip with a RPi.
 This library implements the example communication protocol described in the datasheet.
 https://www.adafruit.com/datasheets/MCP3008.pdf
 
-Communication is made trhough RPi SPI port using SpiDev
+Communication is made through RPi SPI port using SpiDev
 https://github.com/doceme/py-spidev
 
 ## Wiring
@@ -35,7 +35,7 @@ Connect the SPI data cables in the tables bellow. Choose either CE0# or CE1# to 
 
 ## Usage
 
-RPi_mcp3008 uses the `with` statement to properly handle the cleanup.
+RPi_mcp3008 uses the `with` statement to properly handle the SPI bus cleanup.
 ```python
 import mcp3008
 with mcp3008.MCP3008() as adc:
@@ -49,31 +49,43 @@ print adc.read()
 adc.close()
 ```
 The initialization arguments are `MCP3008(bus=0, device=0)` where:
-`MCP3008(X, Y)` will open /dev/spidev-X.Y, same as spidev.SpiDev.open(X, Y)
+`MCP3008(X, Y)` will open /dev/spidev-X.Y, same as `spidev.SpiDev.open(X, Y)`
 
 ### Methods
 Currently there are two implemented methods:
 ```python
-def read(self, mode, norm=False):
+def read(self, modes, norm=False):
     '''
     Returns the raw value (0 ... 1024) of the reading.
-    mode is the mode of operation (e.g. mcp3008.CH0)
-    norm is a normalization factor, usually Vref
+    The modes argument is a list with the modes of operation to be read (e.g.
+    [mcp3008.CH0,mcp3008.Df0]).
+    norm is a normalization factor, usually Vref.
     '''
 ```
 
 ```python
 def read_all(self, norm=False):
     '''
-    Returns a list with the readings of all the channels and modes
-    Order:
+    Returns a list with the readings of all the modes
+    Data Order:
     [DF0, DF1, DF2, DF3, DF4, DF5, DF6, DF7,
      CH0, CH1, CH2, CH3, CH4, CH5, CH6, CH7]
-    norm is a normalization factor, usually Vref
+    norm is a normalization factor, usually Vref.
     '''
 ```
 * The mode argument must be one of 16 listed bellow (CH0 - CH7, DF0 - DF7)
-* The norm argument is a normalization factor that rescales the raw data, usually Vref
+* The norm argument is a normalization factor that rescales raw data, usually Vref
+
+### Fixed mode
+You can also declare the class with a 'fixed mode', which will make the instance callable:
+
+```python
+import mcp3008
+with mcp3008.MCP3008.fixed([mcp3008.CH0, mcp3008.DF0]) as adc:
+    print adc()     # prints raw data
+    print adc(5.2)  # prints normalized data
+```
+Again you can normalize the data with the norm argument when calling the instance
 
 ## MCP3008 Operation modes
 MCP3008 has 16 different operation modes:
