@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-# import spidev
+import spidev
 
 # Modes Single
 CH0 = 8     # single-ended CH0
@@ -43,7 +43,7 @@ DF7 = 7     # differential CH6 = IN- CH7 = IN+
 
 RESOLUTION = 1 << 10 # 10 bits resolution
 
-class MCP3008(object):
+class MCP3008(spidev.SpiDev):
     '''
     Object that listens the MCP3008 in the SPI port of the RPi.
     Connects the object to the specified SPI device.
@@ -53,8 +53,7 @@ class MCP3008(object):
     def __init__(self, bus=0, device=0):
         self.bus = bus
         self.device = device
-        self.spi = spidev.SpiDev()
-        self.spi.open(self.bus, self.device)
+        self.open(self.bus, self.device)
         self.modes = False
 
     def __del__(self):
@@ -87,12 +86,6 @@ class MCP3008(object):
         instance.modes = modes
         return instance
 
-    def close(self):
-        '''
-        Executes SPI cleanup
-        '''
-        self.spi.close()
-
     def _read_single(self, mode):
         '''
         Returns the value of a single mode reading
@@ -100,7 +93,7 @@ class MCP3008(object):
         if not 0 <= mode <= 15:
             raise IndexError('Outside the channels scope, please use: 0, 1 ..., 7')
         request = [0x1, mode << 4, 0x0] # [start bit, configuration, listen space]
-        _, byte1, byte2 = self.spi.xfer(request)
+        _, byte1, byte2 = self.xfer(request)
         value = (byte1%4 << 8) + byte2
 
     def read(self, modes, norm=False):

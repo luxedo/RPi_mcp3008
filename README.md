@@ -1,10 +1,9 @@
 # RPi_mcp3008
 RPi_mcp3008 is a library to listen to the MCP3008 A/D converter chip with a RPi.
-This library implements the example communication protocol described in the datasheet.
-https://www.adafruit.com/datasheets/MCP3008.pdf
+This library implements the example communication protocol described in the [datasheet](https://www.adafruit.com/datasheets/MCP3008.pdf).
 
-Communication is made through RPi SPI port using SpiDev
-https://github.com/doceme/py-spidev
+
+Communication is made through RPi SPI port using [SpiDev](https://github.com/doceme/py-spidev)
 
 ## Wiring
 Connect the SPI data cables in the tables bellow. Choose either CE0# or CE1# to connect to CS.
@@ -33,23 +32,27 @@ Connect the SPI data cables in the tables bellow. Choose either CE0# or CE1# to 
 | 07  |     CH6     | 15  | CS - Chip select (CE0# or CE1#) |
 | 08  |     CH7     | 16  | DGND - Digital ground |
 
+Please check the [Adafruit guide](https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/connecting-the-cobbler-to-a-mcp3008) on the MCP3008 for more information about wiring
+
+
 ## Usage
 
 RPi_mcp3008 uses the `with` statement to properly handle the SPI bus cleanup.
 ```python
 import mcp3008
 with mcp3008.MCP3008() as adc:
-    print adc.read()
+    print adc.read([mcp3008.CH0]) # prints raw data [CH0]
 ```
 It's possible instantiate the object normally, but it's necessary to call the close method before terminating the program.
 ```python
 import mcp3008
 adc = mcp3008.MCP3008()
-print adc.read()
+print adc.read([mcp3008.CH0]) # prints raw data [CH0]
 adc.close()
 ```
 The initialization arguments are `MCP3008(bus=0, device=0)` where:
-`MCP3008(X, Y)` will open /dev/spidev-X.Y, same as `spidev.SpiDev.open(X, Y)`
+`MCP3008(X, Y)` will open `/dev/spidev-X.Y`, same as `spidev.SpiDev.open(X, Y)`
+Both arguments are optional and have a default value of `0`
 
 ### Methods
 Currently there are two implemented methods:
@@ -73,21 +76,21 @@ def read_all(self, norm=False):
     norm is a normalization factor, usually Vref.
     '''
 ```
-* The mode argument must be one of 16 listed bellow (CH0 - CH7, DF0 - DF7)
-* The norm argument is a normalization factor that rescales raw data, usually Vref
+* The `modes` argument must be a list with at least one of 16 modes listed [bellow](## MCP3008 Operation Modes)
+* The `norm` argument is a normalization factor that rescales raw data, usually Vref
 
 ### Fixed mode
-You can also declare the class with a 'fixed mode', which will make the instance callable:
+You can also declare the class with a `fixed mode`, which will make the instance callable and always return the value of the listed modes.
+Again you can normalize the data with the norm argument when calling the instance.
 
 ```python
 import mcp3008
 with mcp3008.MCP3008.fixed([mcp3008.CH0, mcp3008.DF0]) as adc:
-    print adc()     # prints raw data
-    print adc(5.2)  # prints normalized data
+    print adc()     # prints raw data [CH0, DF0]
+    print adc(5.2)  # prints normalized data [CH0, DF0]
 ```
-Again you can normalize the data with the norm argument when calling the instance
 
-## MCP3008 Operation modes
+## MCP3008 Operation Modes
 MCP3008 has 16 different operation modes:
 It can listen to each of the channels individually **Single Ended** or in a pseudo-differential mode **Differential**
 
@@ -101,4 +104,5 @@ It can listen to each of the channels individually **Single Ended** or in a pseu
 | CH5  | DF0  (CH4 = IN-; CH5 = IN+) |
 | CH6  | DF0  (CH6 = IN+; CH7 = IN-) |
 | CH7  | DF0  (CH6 = IN-; CH7 = IN+) |
-Use the table above as the operation mode when calling `MCP3008.read(mode)`
+
+Use the table above as the operation mode when calling `MCP3008.read(modes)` or setting the `MCP3008.fixed(modes)` mode. (e.g. `MCP3008.read([mcp3008.CH0, mcp3008.DF1])`)
