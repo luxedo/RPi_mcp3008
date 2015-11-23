@@ -1,7 +1,8 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 '''
-RPi_mcp3008 is a library to listen to the MCP3008 A/D converter chip, as described in the datasheet.
+RPi_mcp3008 is a library to listen to the MCP3008 A/D converter chip,
+as described in the datasheet.
 https://www.adafruit.com/datasheets/MCP3008.pdf
 
 Copyright (C) 2015 Luiz Eduardo Amaral <luizamaral306@gmail.com>
@@ -69,7 +70,7 @@ class MCP3008(spidev.SpiDev):
         return 'MCP3008 object at bus {0}, device {1}'.format(self.bus, self.device)
 
     def __call__(self, norm=False):
-        return self.read(modes, norm)
+        return self.read(self.modes, norm)
 
     @classmethod
     def fixed(cls, modes, bus=0, device=0):
@@ -79,7 +80,8 @@ class MCP3008(spidev.SpiDev):
         [mcp3008.CH0,mcp3008.Df0]).
         When calling the instance the object will execute a reading of and return the
         values (e.g. print instance()).
-        When calling the instance, you can pass the optional argument norm to normalize
+        When calling the instance, you can pass the optional argument norm to
+        normalize
         the data (e.g. print instance(5.2)).
         '''
         instance = cls(bus, device)
@@ -93,8 +95,9 @@ class MCP3008(spidev.SpiDev):
         if not 0 <= mode <= 15:
             raise IndexError('Outside the channels scope, please use: 0, 1 ..., 7')
         request = [0x1, mode << 4, 0x0] # [start bit, configuration, listen space]
-        _, byte1, byte2 = self.xfer(request)
+        _, byte1, byte2 = self.xfer2(request)
         value = (byte1%4 << 8) + byte2
+        return value
 
     def read(self, modes, norm=False):
         '''
@@ -107,6 +110,7 @@ class MCP3008(spidev.SpiDev):
         for mode in modes:
             reading.append(self._read_single(mode))
         if norm:
+	    print [value for value in reading]
             return [float(norm)*value/RESOLUTION for value in reading]
         else:
             return reading
@@ -119,9 +123,12 @@ class MCP3008(spidev.SpiDev):
          CH0, CH1, CH2, CH3, CH4, CH5, CH6, CH7]
         norm is a normalization factor, usually Vref.
         '''
-        return self.read([range(16)], norm)
+        return self.read(range(16), norm)
 
 if __name__ == '__main__':
     with MCP3008() as chip:
         print(chip.read_all(4.35))
         print(chip.read_all())
+    with MCP3008.fixed([CH0]) as chip:
+        print chip()
+        print chip(4.35)
