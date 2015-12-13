@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='mcp3008',
-    version='0.1.0a0',
+    version='0.1a1',
     description='RPi_mcp3008 is a library to listen to the MCP3008 A/D converter chip, as described in the datasheet.',
     long_description=open('README.rst').read(),
     url='https://github.com/ArmlessJohn404/RPi_mcp3008',

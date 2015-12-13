@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
 RPi_mcp3008 is a library to listen to the MCP3008 A/D converter chip,
@@ -110,7 +110,6 @@ class MCP3008(spidev.SpiDev):
         for mode in modes:
             reading.append(self._read_single(mode))
         if norm:
-	    print [value for value in reading]
             return [float(norm)*value/RESOLUTION for value in reading]
         else:
             return reading
@@ -124,11 +123,3 @@ class MCP3008(spidev.SpiDev):
         norm is a normalization factor, usually Vref.
         '''
         return self.read(range(16), norm)
-
-if __name__ == '__main__':
-    with MCP3008() as chip:
-        print(chip.read_all(4.35))
-        print(chip.read_all())
-    with MCP3008.fixed([CH0]) as chip:
-        print chip()
-        print chip(4.35)
