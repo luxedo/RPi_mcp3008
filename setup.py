@@ -1,8 +1,8 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='mcp3008',
-    version='0.1a1',
+    version='0.1a2',
     description='RPi_mcp3008 is a library to listen to the MCP3008 A/D converter chip, as described in the datasheet.',
     long_description=open('README.rst').read(),
     url='https://github.com/ArmlessJohn404/RPi_mcp3008',
@@ -24,6 +24,6 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     keywords='RPi MCP3008 SPI interface',
-    # packages=['mcp3008'],
+    packages=find_packages(),
     install_requires=['spidev'],
 )

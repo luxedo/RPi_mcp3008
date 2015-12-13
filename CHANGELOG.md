@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1a2
+* Converted module into package
+
 ## 0.1a1
 * Fixed python 3 support
 * Added `example.py`
