@@ -51,10 +51,12 @@ class MCP3008(spidev.SpiDev):
     The initialization arguments are MCP3008(bus=0, device=0) where:
     MCP3008(X, Y) will open /dev/spidev-X.Y, same as spidev.SpiDev.open(X, Y).
     '''
-    def __init__(self, bus=0, device=0):
+    def __init__(self, bus=0, device=0, speed=0):
         self.bus = bus
         self.device = device
         self.open(self.bus, self.device)
+        if speed>0:
+            self.max_speed_hz = speed 
         self.modes = False
 
     def __del__(self):
