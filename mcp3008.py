@@ -75,7 +75,7 @@ class MCP3008(spidev.SpiDev):
         return self.read(self.modes, norm)
 
     @classmethod
-    def fixed(cls, modes, bus=0, device=0):
+    def fixed(cls, modes, bus=0, device=0, speed=0):
         '''
         Initializes the class with fixed modes, which turns the instance callable.
         The modes argument is a list with the modes of operation to be read (e.g.
@@ -86,7 +86,7 @@ class MCP3008(spidev.SpiDev):
         normalize
         the data (e.g. print instance(5.2)).
         '''
-        instance = cls(bus, device)
+        instance = cls(bus, device, speed)
         instance.modes = modes
         return instance
 
