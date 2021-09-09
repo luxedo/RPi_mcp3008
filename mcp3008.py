@@ -5,7 +5,7 @@ RPi_mcp3008 is a library to listen to the MCP3008 A/D converter chip,
 as described in the datasheet.
 https://www.adafruit.com/datasheets/MCP3008.pdf
 
-Copyright (C) 2015 Luiz Eduardo Amaral <luizamaral306@gmail.com>
+Copyright (C) 2021 Luiz Eduardo Amaral <luizamaral306@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -51,11 +51,12 @@ class MCP3008(spidev.SpiDev):
     The initialization arguments are MCP3008(bus=0, device=0) where:
     MCP3008(X, Y) will open /dev/spidev-X.Y, same as spidev.SpiDev.open(X, Y).
     '''
-    def __init__(self, bus=0, device=0):
+    def __init__(self, bus=0, device=0, max_speed_hz=976000):
         self.bus = bus
         self.device = device
         self.open(self.bus, self.device)
         self.modes = False
+        self.max_speed_hz = max_speed_hz
 
     def __del__(self):
         self.close()
