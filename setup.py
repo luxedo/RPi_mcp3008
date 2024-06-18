@@ -30,5 +30,6 @@ setup(
     ],
     keywords='RPi MCP3008 SPI interface',
     # packages=['mcp3008'],
+    py_modules=["mcp3008"],
     install_requires=['spidev'],
 )
